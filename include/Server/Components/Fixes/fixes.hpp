@@ -7,7 +7,7 @@ struct IPlayerFixesData : public IExtension
 {
     PROVIDE_EXT_UID(FixesData_UID);
 
-    /// Hide the player seen this library?
+    /// Has the player seen this library?
     virtual bool seenLibrary(StringView animationLibrary) = 0;
 };
 
