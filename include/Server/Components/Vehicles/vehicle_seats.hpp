@@ -5,14 +5,6 @@
 
 namespace Impl {
 
-inline bool isValidVehicleModel(int model)
-{
-    if (model < 400 || model > 612) {
-        return false;
-    }
-    return true;
-}
-
 /// Returns 0xFF for invalid vehicles, and returns 0 for vehicles with only a driver.
 inline uint8_t getVehiclePassengerSeats(int model)
 {
@@ -41,3 +33,4 @@ inline uint8_t getVehiclePassengerSeats(int model)
 }
 
 }
+
