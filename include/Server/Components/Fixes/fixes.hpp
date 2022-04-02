@@ -16,6 +16,8 @@ struct IFixesComponent : public IComponent
 {
     PROVIDE_UID(FixesComponent_UID);
 
-	virtual void fixApplyAnimation2(IPlayer& player, StringView const animlib, StringView const animname, float delta, bool loop, bool lockX, bool lockY, bool freeze, uint32_t time, int sync) = 0;
+	virtual void applyAnimation(IPlayer & player, AnimationData const & anim, PlayerAnimationSyncType sync) = 0;
+
+	virtual void clearAnimations(IPlayer & player, PlayerAnimationSyncType sync) = 0;
 };
 
