@@ -425,6 +425,9 @@ struct IPlayer : public IExtensible, public IEntity {
 
     /// Get player's weapons
     virtual WeaponSlots getWeapons() = 0;
+	
+    /// Get single weapon
+    virtual WeaponSlotData getWeaponSlot(int slot) = 0;
 
     /// Reset the player's weapons
     virtual void resetWeapons() = 0;
