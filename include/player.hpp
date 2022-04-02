@@ -419,6 +419,9 @@ struct IPlayer : public IExtensible, public IEntity {
 
     /// Give a weapon to the player
     virtual void giveWeapon(WeaponSlotData weapon) = 0;
+	
+    /// Give a weapon to the player
+    virtual void removeWeapon(uint8_t weapon) = 0;
 
     /// Set the player's ammo for a weapon
     virtual void setWeaponAmmo(WeaponSlotData data) = 0;
