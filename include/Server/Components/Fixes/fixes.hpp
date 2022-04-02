@@ -15,5 +15,8 @@ static const UID FixesComponent_UID = UID(0xb5c615eff0329ff7);
 struct IFixesComponent : public IComponent
 {
     PROVIDE_UID(FixesComponent_UID);
+
+	virtual void spawn(IPlayer & player) = 0;
+	virtual void clearAnimations(IPlayer & player, PlayerAnimationSyncType syncType) = 0;
 };
 
