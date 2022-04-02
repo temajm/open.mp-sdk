@@ -39,42 +39,6 @@ struct TimerTimeOutHandler {
 
 static const UID TimersComponent_UID = UID(0x2ad8124c5ea257a3);
 struct ITimersComponent : public IComponent {
-private:
-	// Only a pointer to this is passed across binary boundaries, so using `std::function` should be API stable.
-	class SimpleTimerHandler final : public TimerTimeOutHandler {
-	private:
-		std::function<void()> handler_;
-
-		SimpleTimerHandler(std::function<void()> const & handler)
-			: handler_(handler)
-		{
-		}
-
-		SimpleTimerHandler(std::function<void()> && handler)
-			: handler_(std::move(handler))
-		{
-		}
-
-		// Ensure only `free` can delete this.
-		~SimpleTimerHandler()
-		{
-		}
-
-		friend struct ITimersComponent;
-
-	public:
-		void timeout(ITimer & timer) override
-		{
-			handler_();
-		}
-
-		void free(ITimer & timer) override
-		{
-			delete this;
-		}
-	};
-
-public:
     PROVIDE_UID(TimersComponent_UID);
 
     /// Create a new timer handled by a handler which times out after a certain time
@@ -89,25 +53,37 @@ public:
     /// @param interval The time after which the timer will time out.
     /// @param count The number of times to call the timer, 0 = infinite.
     virtual ITimer* create(TimerTimeOutHandler* handler, Milliseconds initial, Milliseconds interval, unsigned int count) = 0;
+};
 
-	ITimer * create(std::function<void()> const & handler, Milliseconds interval, bool repeating = false)
+// Only a pointer to this is passed across binary boundaries, so using `std::function` should be ABI stable.
+class SimpleTimerHandler final : public TimerTimeOutHandler {
+private:
+	std::function<void()> handler_;
+
+	// Ensure only `free` can delete this.
+	~SimpleTimerHandler()
 	{
-		return create(new SimpleTimerHandler(handler), interval, repeating);
 	}
 
-	ITimer * create(std::function<void()> const & handler, Milliseconds initial, Milliseconds interval, unsigned int count)
+public:
+	SimpleTimerHandler(std::function<void()> const & handler)
+		: handler_(handler)
 	{
-		return create(new SimpleTimerHandler(handler), initial, interval, count);
 	}
 
-	ITimer * create(std::function<void()> && handler, Milliseconds interval, bool repeating = false)
+	SimpleTimerHandler(std::function<void()> && handler)
+		: handler_(std::move(handler))
 	{
-		return create(new SimpleTimerHandler(std::move(handler)), interval, repeating);
 	}
 
-	ITimer * create(std::function<void()> && handler, Milliseconds initial, Milliseconds interval, unsigned int count)
+	void timeout(ITimer & timer) override
 	{
-		return create(new SimpleTimerHandler(std::move(handler)), initial, interval, count);
+		handler_();
+	}
+
+	void free(ITimer & timer) override
+	{
+		delete this;
 	}
 };
 
