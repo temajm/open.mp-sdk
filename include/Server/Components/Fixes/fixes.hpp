@@ -11,9 +11,11 @@ struct IPlayerFixesData : public IExtension
     virtual bool seenLibrary(StringView animationLibrary) = 0;
 };
 
-static const UID FixessComponent_UID = UID(0xb5c615eff0329ff7);
-struct IFixessComponent : public IComponent
+static const UID FixesComponent_UID = UID(0xb5c615eff0329ff7);
+struct IFixesComponent : public IComponent
 {
-    PROVIDE_UID(FixessComponent_UID);
+    PROVIDE_UID(FixesComponent_UID);
+
+	virtual void fixApplyAnimation2(IPlayer& player, StringView const animlib, StringView const animname, float delta, bool loop, bool lockX, bool lockY, bool freeze, uint32_t time, int sync) = 0;
 };
 
