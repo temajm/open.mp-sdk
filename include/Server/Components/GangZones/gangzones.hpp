@@ -72,3 +72,27 @@ struct IGangZonesComponent : public IPoolComponent<IGangZone> {
     /// add gangzone to checking list to loop through on player update, see if player enters or leaves
     virtual void toggleGangZoneCheck(IGangZone& zone, bool toggle) = 0;
 };
+
+static const UID GangZoneData_UID = UID(0xee8d8056b3351d11);
+struct IPlayerGangZoneData : public IExtension {
+	PROVIDE_EXT_UID(GangZoneData_UID);
+
+	/// Get the previously saved internal ID of this global gang zone.
+	virtual int getGlobalID(int) const = 0;
+
+	/// Get the previously saved internal ID of this per-player gang zone.
+	virtual int getPrivateID(int) const = 0;
+
+	/// Return an ID the client isn't using to represent this global gang zone.
+	virtual int reserveGlobalID(int) = 0;
+
+	/// Return an ID the client isn't using to represent this per-player gang zone.
+	virtual int reservePrivateID(int) = 0;
+
+	/// Mark this global gang zone ID as now not shown.
+	virtual bool releaseGlobalID(int) = 0;
+
+	/// Mark this per-player gang zone ID as now not shown.
+	virtual bool releasePrivateID(int) = 0;
+};
+
