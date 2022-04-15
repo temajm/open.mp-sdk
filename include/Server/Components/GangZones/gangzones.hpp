@@ -90,9 +90,9 @@ struct IPlayerGangZoneData : public IExtension {
 	virtual int reservePrivateID(int) = 0;
 
 	/// Mark this global gang zone ID as now not shown.
-	virtual bool releaseGlobalID(int) = 0;
+	virtual int releaseGlobalID(int) = 0;
 
 	/// Mark this per-player gang zone ID as now not shown.
-	virtual bool releasePrivateID(int) = 0;
+	virtual int releasePrivateID(int) = 0;
 };
 
