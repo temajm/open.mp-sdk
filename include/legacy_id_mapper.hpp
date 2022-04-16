@@ -19,12 +19,80 @@ struct ILegacyIDMapper
 	virtual int reserve(int id) = 0;
 
 	/// Release a previously used legacy ID and return the new ID it referenced.
-	virtual int release() = 0;
+	virtual int release(int id) = 0;
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
 	virtual int toLegacy(int id) = 0;
 
 	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
 	virtual int fromLegacy(int id) = 0;
+};
+
+template <int /*MA*/X, int /*MI*/N = 0, int I/*NVALID*/ = -1, int F/*AIL*/ = 0>
+class FiniteLegacyIDMapper final : public ILegacyIDMapper<X, N, I, F>
+{
+public:
+	static const int MIN = N;
+	static const int MIN = X;
+	static const int INVALID = I;
+	static const int NOT_FOUND = F;
+
+private:
+	StaticArray<int, MAX - MIN> ids_;
+
+public:
+	FiniteLegacyIDMapper()
+		: ids_(NOT_FOUND)
+	{
+	}
+
+	/// Request a new legacy ID for the given new ID.
+	virtual int reserve(int id) override
+	{
+		for (size_t i = 0; i != MAX - MIN; ++i)
+		{
+			if (ids_[i] == NOT_FOUND)
+			{
+				ids_[i] = id;
+				return i + MIN;
+			}
+		}
+		return INVALID;
+	}
+
+	/// Release a previously used legacy ID and return the new ID it referenced.
+	virtual int release(int id) override
+	{
+		if (id < MIN || id >= MAX)
+		{
+			return NOT_FOUND;
+		}
+		int ret = ids_[id - MIN];
+		ids_[id - MIN] = NOT_FOUND;
+		return ret;
+	}
+
+	/// Get the legacy ID for the given new ID, or `INVALID`.
+	virtual int toLegacy(int id) override
+	{
+		for (size_t i = 0; i != MAX - MIN; ++i)
+		{
+			if (ids_[i] == id)
+			{
+				return i + MIN;
+			}
+		}
+		return INVALID;
+	}
+
+	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
+	virtual int fromLegacy(int id) override
+	{
+		if (id < MIN || id >= MAX)
+		{
+			return NOT_FOUND;
+		}
+		return ids_[id - MIN];
+	}
 };
 
