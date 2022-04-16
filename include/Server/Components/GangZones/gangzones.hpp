@@ -53,36 +53,6 @@ struct IGangZone : public IGangZoneBase
     virtual const Colour getColorForPlayer(IPlayer& player) const = 0;
 };
 
-struct IPlayerGangZone : public IGangZoneBase
-{
-	/// Check if a gangzone is shown for player
-	virtual bool isShown() const = 0;
-
-	/// Check if a gangzone is flashing for player
-    virtual bool isFlashing() const = 0;
-
-    /// Show a gangzone for player
-    virtual void show(const Colour& colour) = 0;
-
-    /// Hide a gangzone for player
-    virtual void hide() = 0;
-
-    /// Flashing a gangzone for player
-    virtual void flash(const Colour& colour) = 0;
-
-    /// Stop flashing a gangzone for player
-    virtual void stop() = 0;
-
-    /// Check if specified player is within gangzone bounds (only works with IGangZonesComponent::toggleGangZoneCheck).
-    virtual bool isInside() const = 0;
-
-    /// get gangzone flashing color for a player
-    virtual const Colour getFlashingColor() const = 0;
-
-    /// get gangzone color for a player
-    virtual const Colour getColor() const = 0;
-};
-
 struct GangZoneEventHandler {
     virtual void onPlayerEnterGangZone(IPlayer& player, IGangZone& zone) { }
     virtual void onPlayerLeaveGangZone(IPlayer& player, IGangZone& zone) { }
@@ -112,22 +82,22 @@ static const UID GangZoneData_UID = UID(0xee8d8056b3351d11);
 struct IPlayerGangZoneData : public IExtension {
 	PROVIDE_EXT_UID(GangZoneData_UID);
 
-	/// Get the previously saved internal ID of this global gang zone.
-	virtual int getGlobalID(int) const = 0;
+	/// Get the ID of this zone as used externally (i.e. in pawn).
+	virtual int getExternalID(int) const = 0;
 
-	/// Get the previously saved internal ID of this per-player gang zone.
-	virtual int getPrivateID(int) const = 0;
+	/// Get the ID of this zone as used internally (i.e. sent to the client).
+	virtual int getInternalID(int) const = 0;
 
-	/// Return an ID the client isn't using to represent this global gang zone.
-	virtual int reserveGlobalID(int) = 0;
+	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
+	virtual int reserveExternalID(int) = 0;
 
-	/// Return an ID the client isn't using to represent this per-player gang zone.
-	virtual int reservePrivateID(int) = 0;
+	/// Return an ID not yet used on the client to represent this gang zone.
+	virtual int reserveInternalID(int) = 0;
 
-	/// Mark this global gang zone ID as now not shown.
-	virtual int releaseGlobalID(int) = 0;
+	/// Release the ID used in limited pools.
+	virtual int releaseExternalID(int) = 0;
 
-	/// Mark this per-player gang zone ID as now not shown.
-	virtual int releasePrivateID(int) = 0;
+	/// Release the ID used on the client.
+	virtual int releaseInternalID(int) = 0;
 };
 

@@ -28,6 +28,7 @@ struct ILegacyIDMapper
 	virtual int fromLegacy(int id) = 0;
 };
 
+// TODO: Use a faster `toLegacy` lookup system.  Maybe binary search or similar.
 template <int /*MA*/X, int /*MI*/N = 0, int I/*NVALID*/ = -1, int F/*AIL*/ = 0>
 class FiniteLegacyIDMapper final : public ILegacyIDMapper<X, N, I, F>
 {
