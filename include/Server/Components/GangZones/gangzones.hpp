@@ -107,7 +107,7 @@ struct IPlayerGangZoneData : public IExtension {
 	virtual int fromLegacyID(int legacy) const = 0;
 
 	/// Release the ID used in limited pools.
-	virtual int releaseLegacyID(int legacy) = 0;
+	virtual void releaseLegacyID(int legacy) = 0;
 
 	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
 	virtual int reserveLegacyID() = 0;
@@ -122,7 +122,7 @@ struct IPlayerGangZoneData : public IExtension {
 	virtual int fromClientID(int legacy) const = 0;
 
 	/// Release the ID used on the client.
-	virtual int releaseClientID(int legacy) = 0;
+	virtual void releaseClientID(int legacy) = 0;
 
 	/// Return an ID not yet used on the client to represent this gang zone.
 	virtual int reserveClientID() = 0;

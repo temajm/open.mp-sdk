@@ -22,7 +22,7 @@ struct ILegacyIDMapper
 	virtual void set(int legacy, int real) = 0;
 
 	/// Release a previously used legacy ID and return the new ID it referenced.
-	virtual int release(int legacy) = 0;
+	virtual void release(int legacy) = 0;
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
 	virtual int toLegacy(int real) const = 0;
@@ -73,15 +73,13 @@ public:
 	}
 
 	/// Release a previously used legacy ID and return the new ID it referenced.
-	virtual int release(int legacy) override
+	virtual void release(int legacy) override
 	{
-		if (legacy < MIN || legacy >= MAX)
+		if (legacy >= MIN && legacy < MAX)
 		{
-			return NOT_FOUND;
+			int ret = ids_[legacy - MIN];
+			ids_[legacy - MIN] = NOT_FOUND;
 		}
-		int ret = ids_[legacy - MIN];
-		ids_[legacy - MIN] = NOT_FOUND;
-		return ret;
 	}
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
