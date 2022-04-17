@@ -11,7 +11,7 @@ template <int /*MA*/X, int /*MI*/N = 0, int I/*NVALID*/ = -1, int F/*AIL*/ = 0>
 struct ILegacyIDMapper
 {
 	static const int MIN = N;
-	static const int MIN = X;
+	static const int MAX = X;
 	static const int INVALID = I;
 	static const int NOT_FOUND = F;
 
@@ -25,10 +25,10 @@ struct ILegacyIDMapper
 	virtual int release(int legacy) = 0;
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
-	virtual int toLegacy(int real) = 0;
+	virtual int toLegacy(int real) const = 0;
 
 	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
-	virtual int fromLegacy(int legacy) = 0;
+	virtual int fromLegacy(int legacy) const = 0;
 };
 
 // TODO: Use a faster `toLegacy` lookup system.  Maybe binary search or similar.
@@ -37,7 +37,7 @@ class FiniteLegacyIDMapper final : public ILegacyIDMapper<X, N, I, F>
 {
 public:
 	static const int MIN = N;
-	static const int MIN = X;
+	static const int MAX = X;
 	static const int INVALID = I;
 	static const int NOT_FOUND = F;
 
@@ -85,7 +85,7 @@ public:
 	}
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
-	virtual int toLegacy(int real) override
+	virtual int toLegacy(int real) const override
 	{
 		for (size_t legacy = 0; legacy != MAX - MIN; ++legacy)
 		{
@@ -98,7 +98,7 @@ public:
 	}
 
 	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
-	virtual int fromLegacy(int legacy) override
+	virtual int fromLegacy(int legacy) const override
 	{
 		if (legacy < MIN || legacy >= MAX)
 		{
