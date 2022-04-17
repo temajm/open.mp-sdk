@@ -61,6 +61,8 @@ struct GangZoneEventHandler {
     virtual void onPlayerLeaveGangZone(IPlayer& player, IGangZone& zone) { }
     virtual void onPlayerEnterPlayerGangZone(IPlayer& player, IGangZone& zone) { }
     virtual void onPlayerLeavePlayerGangZone(IPlayer& player, IGangZone& zone) { }
+    virtual void onPlayerClickGangZone(IPlayer& player, IGangZone& zone) { }
+    virtual void onPlayerClickPlayerGangZone(IPlayer& player, IGangZone& zone) { }
 };
 
 static const UID GangZoneComponent_UID = UID(0xb3351d11ee8d8056);
