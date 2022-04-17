@@ -78,7 +78,7 @@ struct IGangZonesComponent : public IPoolComponent<IGangZone> {
     virtual const FlatHashSet<IGangZone*>& getCheckingGangZones() const = 0;
 
     /// add gangzone to checking list to loop through on player update, see if player enters or leaves
-    virtual void toggleGangZoneCheck(IGangZone& zone, bool toggle) = 0;
+    virtual void useGangZoneCheck(IGangZone& zone, bool enable) = 0;
 
 	/// Get the ID of this zone as used in old pools (i.e. in pawn).
 	virtual int toLegacyID(int real) const = 0;
