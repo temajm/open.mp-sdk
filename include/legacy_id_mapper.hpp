@@ -46,8 +46,9 @@ private:
 
 public:
 	FiniteLegacyIDMapper()
-		: ids_(NOT_FOUND)
+		: ids_()
 	{
+		ids_.fill(NOT_FOUND);
 	}
 
 	/// Request a new legacy ID.

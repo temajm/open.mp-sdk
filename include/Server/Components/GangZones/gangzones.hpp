@@ -87,7 +87,7 @@ struct IGangZonesComponent : public IPoolComponent<IGangZone> {
 	virtual int fromLegacyID(int legacy) const = 0;
 
 	/// Release the ID used in limited pools.
-	virtual int releaseLegacyID(int legacy) = 0;
+	virtual void releaseLegacyID(int legacy) = 0;
 
 	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
 	virtual int reserveLegacyID() = 0;
