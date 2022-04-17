@@ -12,16 +12,7 @@ struct GangZonePos {
 };
 
 /// Gangzone interace
-struct IGangZoneBase : public IExtensible, public IIDProvider {
-	/// Get position of gangzone. Returns a structure of vec2 min and vec2 max coordinates
-	virtual GangZonePos getPosition() const = 0;
-
-	/// Set position of gangzone. Takes a structure of vec2 min and vec2 max coordinates
-    virtual void setPosition(const GangZonePos& position) = 0;
-};
-
-struct IGangZone : public IGangZoneBase
-{
+struct IGangZone : public IExtensible, public IIDProvider {
 	/// Check if a gangzone is shown for player
     virtual bool isShownForPlayer(const IPlayer& player) const = 0;
 
@@ -40,6 +31,12 @@ struct IGangZone : public IGangZoneBase
     /// Stop flashing a gangzone for player
     virtual void stopFlashForPlayer(IPlayer& player) = 0;
 
+    /// Get position of gangzone. Returns a structure of vec2 min and vec2 max coordinates
+    virtual GangZonePos getPosition() const = 0;
+
+    /// Set position of gangzone. Takes a structure of vec2 min and vec2 max coordinates
+    virtual void setPosition(const GangZonePos& position) = 0;
+
     /// Check if specified player is within gangzone bounds (only works with IGangZonesComponent::toggleGangZoneCheck).
     virtual bool isPlayerInside(const IPlayer& player) const = 0;
 
@@ -47,10 +44,16 @@ struct IGangZone : public IGangZoneBase
     virtual const FlatHashSet<IPlayer*>& getShownFor() = 0;
 
     /// get gangzone flashing color for a player
-    virtual const Colour getFlashingColorForPlayer(IPlayer& player) const = 0;
+    virtual const Colour getFlashingColourForPlayer(IPlayer& player) const = 0;
 
     /// get gangzone color for a player
-    virtual const Colour getColorForPlayer(IPlayer& player) const = 0;
+    virtual const Colour getColourForPlayer(IPlayer& player) const = 0;
+
+    /// Used by legacy per-player gangzones for ID mapping.
+    virtual void setLegacyPlayer(IPlayer* player) = 0;
+
+    /// Used by legacy per-player gangzones for ID mapping.
+    virtual IPlayer* getLegacyPlayer() const = 0;
 };
 
 struct GangZoneEventHandler {
@@ -76,28 +79,55 @@ struct IGangZonesComponent : public IPoolComponent<IGangZone> {
 
     /// add gangzone to checking list to loop through on player update, see if player enters or leaves
     virtual void toggleGangZoneCheck(IGangZone& zone, bool toggle) = 0;
+
+	/// Get the ID of this zone as used in old pools (i.e. in pawn).
+	virtual int toLegacyID(int) const = 0;
+	
+	/// Get the ID of this zone as used in the SDK.
+	virtual int fromLegacyID(int) const = 0;
+
+	/// Release the ID used in limited pools.
+	virtual int releaseLegacyID(int) = 0;
+
+	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
+	virtual int reserveLegacyID() = 0;
+
+	/// Assign a full ID to the legacy ID reserved earlier.
+	virtual void setLegacyID(int, int) = 0;
 };
 
 static const UID GangZoneData_UID = UID(0xee8d8056b3351d11);
 struct IPlayerGangZoneData : public IExtension {
 	PROVIDE_EXT_UID(GangZoneData_UID);
 
-	/// Get the ID of this zone as used externally (i.e. in pawn).
-	virtual int getExternalID(int) const = 0;
+	/// Get the ID of this zone as used in old pools (i.e. in pawn).
+	virtual int toLegacyID(int) const = 0;
 
-	/// Get the ID of this zone as used internally (i.e. sent to the client).
-	virtual int getInternalID(int) const = 0;
-
-	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
-	virtual int reserveExternalID(int) = 0;
-
-	/// Return an ID not yet used on the client to represent this gang zone.
-	virtual int reserveInternalID(int) = 0;
+	/// Get the ID of this zone as used in the SDK.
+	virtual int fromLegacyID(int) const = 0;
 
 	/// Release the ID used in limited pools.
-	virtual int releaseExternalID(int) = 0;
+	virtual int releaseLegacyID(int) = 0;
+
+	/// Return an ID not yet used in pawn (et al) to represent this gang zone.
+	virtual int reserveLegacyID() = 0;
+
+	/// Assign a full ID to the legacy ID reserved earlier.
+	virtual void setLegacyID(int, int) = 0;
+
+	/// Get the ID of this zone as used internally (i.e. sent to the client).
+	virtual int toClientID(int) const = 0;
+
+	/// Get the ID of this zone as used in the SDK.
+	virtual int fromClientID(int) const = 0;
 
 	/// Release the ID used on the client.
-	virtual int releaseInternalID(int) = 0;
+	virtual int releaseClientID(int) = 0;
+
+	/// Return an ID not yet used on the client to represent this gang zone.
+	virtual int reserveClientID() = 0;
+
+	/// Assign a full ID to the legacy ID reserved earlier.
+	virtual void setClientID(int, int) = 0;
 };
 

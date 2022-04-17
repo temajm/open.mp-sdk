@@ -15,17 +15,20 @@ struct ILegacyIDMapper
 	static const int INVALID = I;
 	static const int NOT_FOUND = F;
 
-	/// Request a new legacy ID for the given new ID.
-	virtual int reserve(int id) = 0;
+	/// Request a new legacy ID.
+	virtual int reserve() = 0;
+
+	/// Store the given new ID in a legacy ID.
+	virtual void set(int legacy, int real) = 0;
 
 	/// Release a previously used legacy ID and return the new ID it referenced.
-	virtual int release(int id) = 0;
+	virtual int release(int legacy) = 0;
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
-	virtual int toLegacy(int id) = 0;
+	virtual int toLegacy(int real) = 0;
 
 	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
-	virtual int fromLegacy(int id) = 0;
+	virtual int fromLegacy(int legacy) = 0;
 };
 
 // TODO: Use a faster `toLegacy` lookup system.  Maybe binary search or similar.
@@ -47,53 +50,61 @@ public:
 	{
 	}
 
-	/// Request a new legacy ID for the given new ID.
-	virtual int reserve(int id) override
+	/// Request a new legacy ID.
+	virtual int reserve() override
 	{
-		for (size_t i = 0; i != MAX - MIN; ++i)
+		for (size_t legacy = 0; legacy != MAX - MIN; ++legacy)
 		{
-			if (ids_[i] == NOT_FOUND)
+			if (ids_[legacy] == NOT_FOUND)
 			{
-				ids_[i] = id;
-				return i + MIN;
+				return legacy + MIN;
 			}
 		}
 		return INVALID;
 	}
 
-	/// Release a previously used legacy ID and return the new ID it referenced.
-	virtual int release(int id) override
+	/// Store the given new ID in a legacy ID.
+	virtual void set(int legacy, int real) override
 	{
-		if (id < MIN || id >= MAX)
+		if (legacy >= MIN && legacy < MAX)
+		{
+			ids_[legacy - MIN] = real;
+		}
+	}
+
+	/// Release a previously used legacy ID and return the new ID it referenced.
+	virtual int release(int legacy) override
+	{
+		if (legacy < MIN || legacy >= MAX)
 		{
 			return NOT_FOUND;
 		}
-		int ret = ids_[id - MIN];
-		ids_[id - MIN] = NOT_FOUND;
+		int ret = ids_[legacy - MIN];
+		ids_[legacy - MIN] = NOT_FOUND;
 		return ret;
 	}
 
 	/// Get the legacy ID for the given new ID, or `INVALID`.
-	virtual int toLegacy(int id) override
+	virtual int toLegacy(int real) override
 	{
-		for (size_t i = 0; i != MAX - MIN; ++i)
+		for (size_t legacy = 0; legacy != MAX - MIN; ++legacy)
 		{
-			if (ids_[i] == id)
+			if (ids_[legacy] == real)
 			{
-				return i + MIN;
+				return legacy + MIN;
 			}
 		}
 		return INVALID;
 	}
 
 	/// Get the new ID for the given legacy ID, or `NOT_FOUND`.
-	virtual int fromLegacy(int id) override
+	virtual int fromLegacy(int legacy) override
 	{
-		if (id < MIN || id >= MAX)
+		if (legacy < MIN || legacy >= MAX)
 		{
 			return NOT_FOUND;
 		}
-		return ids_[id - MIN];
+		return ids_[legacy - MIN];
 	}
 };
 
