@@ -296,6 +296,9 @@ struct INetwork : public IExtensible {
 
     /// Update server parameters
     virtual void update() = 0;
+
+    /// Get server's internal instance of this network
+    virtual void* getInternalInstance() const = 0;
 };
 
 /// A component interface which allows for writing a network component
